@@ -1,0 +1,175 @@
+{% extends 'core/layouts/base.html' %}
+{% load static %}
+{% block title %}Carrito{% endblock %}
+
+{% block contenido %}
+<h2 class="text-white text-center text-2xl md:text-3xl lg:text-4xl font-bold my-4">Productos en tu carrito</h2>
+<div class="flex flex-col items-center justify-center bg-slate-500 m-4 md:m-16 lg:m-24 rounded min-h-[24rem]">
+    {% if cart_items %}
+        <ul class="w-full max-w-md p-4">
+            {% for item in cart_items %}
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 bg-gray-100 p-4 rounded-lg shadow mb-2 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300">
+                        <div class="flex">
+                            <div class="flex-1 mb-3">
+                                <!-- Información del producto aquí -->
+                                <p class="font-semibold">Producto: {{ item.producto.Nombre }}</p>
+                                <p>Precio: ${{ item.producto.Precio|floatformat:"-1" }}</p>
+                            </div>
+                            <!--<div class="flex-1">
+                                <img src="{% if item.Imagen %}{{ item.producto.Imagen }}{% else %}{% static 'core/Img/box.jpg' %}{% endif %}" alt="Coperativa Logo" class="w-15 h-15 mb-4 md:mx-auto mt-6" />
+                            </div>
+                            -->
+                            <div class="flex-1 mt-3 flex items-center justify-center space-x-2">
+                                <button class="cantidad-modificar bg-red-600 text-white rounded-3xl p-2" data-producto-id="{{ item.producto.id }}" data-accion="restar" data-producto-nombre="{{ item.producto.nombre }}"><strong>-</strong></button>
+                                <span>{{ item.cantidad|floatformat:"-1" }}</span>
+                                <button class="cantidad-modificar bg-green-600 text-white rounded-3xl p-2" data-producto-id="{{ item.producto.id }}" data-accion="agregar" data-producto-nombre="{{ item.producto.nombre }}"><strong>+</strong></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <div id="payment-total" class="total-compra" data-total="{{ total }}">
+                <h2>Total de la Compra: ${{ total|floatformat:"-1" }}</h2>
+            </div>
+        </ul>
+    {% else %}
+        <p class="text-white">Tu carrito está vacío.</p>
+    {% endif %}
+    <div class="flex justify-center mt-10" id="paypal-button"></div>
+</div>
+
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    var cartTotal = document.getElementById('payment-total').getAttribute('data-total'); // Obtener el total del carro
+    var formattedTotal = parseFloat(cartTotal).toFixed(2); // Formatear el total a dos decimales
+    paypal.Button.render({
+        // Configure environment
+        env: 'sandbox',
+        client: {
+            sandbox: 'AeCOnJWsYNdIu-Hq9Z7XzhEpEi2AQo3X-fMDeWN7WC1nLIiIKSvRVl2y0ufyLuHqZmrz2oU0gOMFaqUy',
+            production: 'demo_production_client_id'
+        },
+        // Customize button (optional)
+        locale: 'en_US',
+        style: {
+            size: 'medium',
+            color: 'gold',
+            shape: 'pill',
+        },
+        // Enable Pay Now checkout flow (optional)
+        commit: true,
+        // Set up a payment
+        payment: function (data, actions) {
+            return actions.payment.create({
+                transactions: [{
+                    amount: {
+                        total: formattedTotal,
+                        currency: 'USD'
+                    }
+                }]
+            });
+        },
+        // Execute the payment
+        onAuthorize: function (data, actions) {
+            return actions.payment.execute().then(function () {
+                // Show a confirmation message to the buyer
+                compraRealizadaConExito().then(() => {
+                    // Realizar una solicitud AJAX para descargar el comprobante
+            fetch("{% url 'descargar_comprobante' %}", {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/pdf',
+                },
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                // Crear un enlace para descargar el PDF
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.setAttribute('download', 'comprobante_compra.pdf'); // Define el nombre del archivo a descargar
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode.removeChild(link);
+            })
+            .catch(error => console.error('Error al descargar el comprobante:', error));
+                })
+            });
+        }
+    }, '#paypal-button');
+});
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.querySelectorAll(".cantidad-modificar").forEach((button) => {
+        button.addEventListener("click", function () {
+            const producto_id = this.getAttribute("data-producto-id");
+            const accion = this.getAttribute("data-accion");
+            const producto_nombre = this.getAttribute("data-producto-nombre"); // Asegúrate de agregar este atributo en el HTML
+            const csrftoken = getCookie("csrftoken");
+
+            fetch(`/modificar_cantidad_producto/${producto_id}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrftoken,
+                },
+                body: JSON.stringify({accion: accion}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.producto_eliminado) {
+                    alert(`El producto ${producto_nombre} ha sido eliminado del carrito.`);
+                    // Opcional: Actualizar la interfaz para reflejar que el producto fue eliminado.
+                    window.location.reload(); // Recargar la página para actualizar el estado del carrito.
+                } else {
+                    // Aquí puedes manejar otros casos, por ejemplo, actualizar la cantidad mostrada en la interfaz.
+                    window.location.reload();
+                    console.log(`Cantidad de ${producto_nombre} actualizada.`);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+// Suponiendo que esta función se llama después de realizar la compra exitosamente
+function compraRealizadaConExito() {
+  Swal.fire({
+    title: '¡Compra realizada!',
+    text: 'Tu compra ha sido procesada exitosamente.',
+    icon: 'success',
+    confirmButtonText: 'Ok'
+  });
+  const csrftoken = getCookie("csrftoken");
+  fetch(`/compra_exitosa/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrftoken,
+                },
+                body: JSON.stringify({}),
+            })
+
+  
+}
+</script>
+{% endblock %}

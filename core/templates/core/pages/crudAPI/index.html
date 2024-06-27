@@ -1,0 +1,55 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Productos{% endblock %}
+
+{% block contenido %}
+<div class="container mx-auto">
+    {% if user.is_superuser %}
+    <!-- Botón "Agregar un producto" -->
+    <div class="flex justify-center md:justify-start px-3">
+        <button class="btn bg-blue-500 text-white p-2 shadow-md transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300">
+            <a href="{% url 'agregar_producto' %}">Agregar un producto</a>
+        </button>
+    </div>
+
+    {% endif %}
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 my-10 px-10">
+        {% for aux in page_obj %}
+            {% include 'core/components/card-producto.html' %}
+        {% endfor %}
+        <nav aria-label="Page navigation example" class="pagination my-4">
+            <ul class="pagination-list flex justify-center space-x-2">
+                {% if page_obj.has_previous %}
+                <li class="pagination-item">
+                    <a class="pagination-link px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" href="?page=1">&laquo; Primera</a>
+                </li>
+                <li class="pagination-item">
+                    <a class="pagination-link px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                </li>
+                {% endif %}
+        
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="pagination-item">
+                    <a class="pagination-link px-4 py-2 bg-blue-500 text-white rounded" href="#">{{ num }}</a>
+                </li>
+                {% elif num > page_obj.number|add:'-5' and num < page_obj.number|add:'5' %}
+                <li class="pagination-item">
+                    <a class="pagination-link px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+        
+                {% if page_obj.has_next %}
+                <li class="pagination-item">
+                    <a class="pagination-link px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                </li>
+                <li class="pagination-item">
+                    <a class="pagination-link px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" href="?page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>                
+    </div>
+</div>
+{% endblock %}

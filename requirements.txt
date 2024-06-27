@@ -1,0 +1,12 @@
+django
+django-admin-interface
+crispy-tailwind
+pillow
+psycopg2
+djangorestframework
+requests
+django-admin-confirm
+django-axes
+django-simple-captcha
+django-recaptcha
+reportlab

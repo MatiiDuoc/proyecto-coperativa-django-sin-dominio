@@ -1,0 +1,26 @@
+{% extends 'core/layouts/base.html' %}
+{% load static %}
+{% block title %}Historial de compras{% endblock %}
+{% block contenido %}
+<h2 class="text-white text-center text-2xl md:text-3xl lg:text-4xl font-bold my-4">Historial de Compras</h2>
+<div class="flex flex-col items-center justify-center bg-slate-500 m-4 md:m-16 lg:m-24 p-4 rounded">
+    <ul class="w-full max-w-4xl">
+        {% for compra in historial_compras  %}
+        <li class="bg-white p-4 rounded-lg shadow-md mb-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex flex-col md:flex-row justify-between items-center w-full">
+                <div class="flex flex-col md:flex-row items-center">
+                    <span class="font-semibold">Compra #{{ compra.id }}</span>
+                    <span class="ml-2">Fecha: {{ compra.fecha|date:"d M Y H:i" }}</span>
+                </div>
+            </div>
+            <ul class="mt-4">
+            {% for item in compra.items.all %}
+                <li class="mb-2">{{ item.producto.Nombre }} - Cantidad: {{ item.cantidad }}</li>
+            {% endfor %}
+            </ul>
+            <span class="mt-2 md:mt-0">Total: ${{ compra.total|floatformat:"-1" }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

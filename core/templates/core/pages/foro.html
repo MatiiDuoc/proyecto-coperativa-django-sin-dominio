@@ -1,0 +1,23 @@
+{% extends 'core/layouts/base.html' %}
+{% load static %}
+{% block title %}Foro{% endblock %}
+
+
+
+{% block contenido %}
+<div class="container mx-auto px-10 min-h-[86%]">
+    <div>
+        <p class="text-3xl font-bold text-center text-white">Foro de consultas</p>
+    </div>
+    {% if user.is_authenticated %}
+    <div>
+        <button class="btn bg-blue-500 text-white p-2 shadow-md transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-110 duration-300"><a href="{% url 'agregar_foro' %}">Realizar una consulta</a></button>
+    </div>
+    {% endif %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+        {% for aux in lista %}
+            {% include 'core/components/card-foro.html' %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

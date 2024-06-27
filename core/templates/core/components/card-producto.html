@@ -1,0 +1,119 @@
+{% load static %}
+<!-- primer grid -->
+<div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-white dark:border-gray-700 mx-auto">
+  <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-black">
+    {{aux.Nombre}}
+  </h5>
+  <img src="{% if aux.Imagen %}{{ aux.Imagen }}{% else %}{% static 'core/Img/box.jpg' %}{% endif %}" alt="Coperativa Logo" class="w-80 h-80 img-height mb-4" />
+  <p class="mb-3">
+    {{aux.Descripcion}}
+  </p>
+  <p>
+    <strong>$ {{aux.Precio|floatformat:"-1"}}</strong>
+  </p>
+  <p><Strong>Stock {{ aux.Cantidad|floatformat:"-1" }}</Strong></p>
+  <a href="{% url 'detalle_producto' aux.id %}"
+    class="mb-3 inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+    Saber mas
+    <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+      viewBox="0 0 14 10">
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M1 5h12m0 0L9 1m4 4L9 9" />
+    </svg>
+  </a>
+  <!--Esto es solamente para poder saber si funciona el actualizar de los productos, después se debe de retirar solamente se ve con el admin-->
+  {% if user.is_superuser %}
+    <a href="{% url 'actualizar_producto' aux.id %}"
+      class="inline-flex items-center px-3 py-2  mb-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+      Actualizar producto
+      <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+        viewBox="0 0 14 10">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M1 5h12m0 0L9 1m4 4L9 9" />
+      </svg>
+    </a>
+    <!--Si funciona el eliminar también solamente es de prueba después se debe de migrar al dashboard de admin-->
+    <!--<a href="{% url 'eliminar_producto' aux.id %}"
+    class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+    Eliminar producto
+    <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+      viewBox="0 0 14 10">
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M1 5h12m0 0L9 1m4 4L9 9" />
+    </svg>
+    </a>-->
+  {% endif %}
+    <button type="button"  class="add-to-cart-btn 
+    px-3 py-2 
+    text-sm 
+    font-medium 
+    text-center text-white
+    bg-blue-700 rounded-lg
+    hover:bg-blue-800 
+    focus:ring-4 focus:outline-none 
+    focus:ring-blue-300 dark:bg-blue-600 
+    dark:hover:bg-blue-700 
+    dark:focus:ring-blue-800"
+    data-product-id="{{ aux.id }}">Agregar al Carrito
+    </button>
+</div>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+    // Asegúrate de que este código se ejecute solo una vez por botón
+    document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
+        // Elimina cualquier evento de clic previamente agregado para evitar duplicados
+        button.removeEventListener("click", handleAddToCartClick);
+        // Agrega el evento de clic
+        button.addEventListener("click", handleAddToCartClick);
+    });
+});
+
+function handleAddToCartClick() {
+    const producto_id = this.getAttribute("data-product-id");
+    const csrftoken = getCookie("csrftoken");
+
+    fetch(`/add_to_cart/${producto_id}/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken,
+        },
+        body: JSON.stringify({}),
+    })
+    .then(data => {
+        // Muestra una alerta de éxito
+        Swal.fire({
+            title: '¡Agregado!',
+            text: 'El producto ha sido agregado al carrito.',
+            icon: 'success',
+            confirmButtonText: 'Ok',
+            timer: 1500, // La alerta se cerrará después de 1.5 segundos
+            timerProgressBar: true, // Muestra una barra de progreso que indica el tiempo restante
+        });
+    })
+    .catch(error => {
+        // Muestra una alerta de error
+        Swal.fire({
+            title: 'Error',
+            text: error.toString(),
+            icon: 'error',
+            confirmButtonText: 'Ok'
+        });
+    });
+}
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>

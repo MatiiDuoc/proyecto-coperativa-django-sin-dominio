@@ -1,0 +1,24 @@
+{% extends 'core/layouts/base.html' %}
+{% load static %}
+{% block title %}Detalle producto{% endblock %}
+
+{% block contenido %}
+<div class="container px-20 mx-auto min-h-[86%]">
+  <h1 class="text-3xl font-bold text-center text-white">Detalle del producto</h1>
+  <div class="bg-white px-2 rounded my-5 border border-black">
+    <hr />
+    <div class="flex justify-evenly">
+        <div class="border-r-2 border-r-black">
+            <img class="w-96 h-96" src="{% if producto.Imagen %}{{ producto.Imagen.url }}{% else %}{% static 'core/Img/box.jpg' %}{% endif %}" alt="product photo">
+        </div>
+        <div class="my-3 pl-2 self-center">
+            <p><strong>Nombre:</strong> {{ producto.Nombre }}</p>
+            <p><strong>Marca:</strong> {{ producto.Marca }}</p>
+            <p><strong>Cantidad:</strong> {{ producto.Cantidad }}</p>
+            <p><strong>Precio:</strong> {{ producto.Price }}</p>
+            <p><strong>Descripción:</strong> {{ producto.Descripcion }}</p>
+          </div>
+      </div>
+  </div>
+</div>
+{% endblock %}

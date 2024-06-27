@@ -1,0 +1,20 @@
+{% extends 'core/layouts/base.html' %}
+{% load static %}
+{% block title %}Detalle artista{% endblock %}
+
+{% block contenido %}
+<div class="container px-20 mx-auto min-h-[86%]">
+  <h1 class="text-3xl font-bold text-center text-white">Detalle del artista</h1>
+  <div class="bg-white p-5 rounded my-5 border border-black">
+    <hr />
+    <div class="flex justify-evenly">
+        <div class="border-r-2 border-r-black">
+          <img class="w-96 h-96" src="{% if artista.Imagen %}{{ artista.Imagen.url }}{% else %}{% static 'core/Img/usuario.png' %}{% endif %}" alt="user photo">
+        </div>
+        <div class="my-3 pl-2 self-center">
+          <p><Strong>Nombre:</Strong> {{ artista.Nombre }} </p>
+        </div>
+      </div>
+  </div>
+</div>
+{% endblock %}

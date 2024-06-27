@@ -1,0 +1,19 @@
+{% extends 'core/layouts/base.html' %}
+{% load static %}
+{% block title %}Agregar Post{% endblock %}
+
+{% load tailwind_filters %}
+
+{% block contenido %}
+<div class="container mx-auto px-40">
+    <h1 class="text-3xl font-bold text-center text-white">Agregar un nuevo post</h1>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <table>
+            {{ form|crispy }}
+        </table>
+        <!--<button class="bg-red-500 rounded-lg cursor-pointer py-1 px-4">Reset</button>-->
+        <button class="bg-blue-500 rounded-lg cursor-pointer py-1 px-4 text-white" type="submit">Agregar post</button>
+    </form>
+</div>
+{% endblock %}

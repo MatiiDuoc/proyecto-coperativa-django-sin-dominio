@@ -1,0 +1,97 @@
+:root {
+  --main-bg-color: #1183cf;
+  --nav-bg-color: #3fa2fd;
+}
+
+.bg-color-navbar {
+  background-color: var(--nav-bg-color);
+}
+/* .btn-navbar {
+  border-radius: 6px;
+  background-color: #428eff;
+} */
+.btn-iniciar-registrar {
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.24);
+}
+
+body {
+  background-color: var(--main-bg-color);
+}
+.dropdown-color {
+  background-color: #3fa2fd;
+  color: white;
+  border-color: #1183cf;
+}
+
+
+
+.underline {
+  text-decoration-line: underline;
+}
+
+.fa-google {
+  background: conic-gradient(
+      from -45deg,
+      #ea4335 110deg,
+      #4285f4 90deg 180deg,
+      #34a853 180deg 270deg,
+      #fbbc05 270deg
+    )
+    73% 55%/150% 150% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.fa-microsoft {
+  background: conic-gradient(
+      from -90deg,
+      #f35325 90deg,
+      #81bc06 90deg 180deg,
+      #ffba08 180deg 270deg,
+      #05a6f0 270deg
+    )
+    no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.producto {
+  height: 480px;
+}
+
+.imagen-producto {
+  height: 480px;
+  width: 180px;
+}
+
+.carousel-text {
+  color: white;
+}
+
+.carousel-caption {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.producto-info {
+  padding-top: 200px;
+}
+
+.none {
+  text-decoration: none;
+}
+.carousel-img {
+  max-width: 100%;
+  height: 100%;
+}
+.footer-links {
+  font-size: 14px;
+  color: #333;
+}
+.footer-links a {
+  text-decoration: none;
+  color: #007bff;
+}
